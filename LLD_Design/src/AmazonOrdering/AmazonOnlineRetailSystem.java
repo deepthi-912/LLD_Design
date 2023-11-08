@@ -19,6 +19,6 @@ package AmazonOrdering;//Amazon Online Shopping System
 import java.util.*;
 
 public class AmazonOnlineRetailSystem {
-    
+
 }
 

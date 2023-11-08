@@ -1,60 +1,33 @@
 package StackOverflow;
 
-enum AccountActivationStatus {
-    ACTIVE, BLOCKED, INACTIVE, DELETED;
-}
-class Address {
-    String street;
-    String apartmentNumber;
-    String country;
-    String state;
-    String pincode;
-}
+//System requirements
+//        1. Posting questions (Edit, Delete)
+//        2. Answers —> Upvoting and down voting
+//        3. Reputation points —> depending on upvotes user gets
+//        4. Acccording to reputation points, users can have privileges and badges
+//        5. Search for questions from all users
+//        6. View questions and answers
+//        7. Can flag a question and delete it, comment for serious problem/attention
+//        8. Can close or reopen a question
+//        9. Can add tags/description/topic to a question
+//        10. Most frequently used tags in the questions
 
-class Person {
-    String id;
-    String personName;
-    String email;
-    String phoneNum;
-    Address address;
-}
-class User {
-    String userId;
-    String password;
-    Person person;
-    AccountActivationStatus status;
-}
+import StackOverflow.Views.*;
 
-class Question {
-    String questionId;
-    String tag;
-    String description;
+import java.util.*;
 
-}
-
-class UpVote {
-    String upVoteId;
-    String userId;
-    String questionId;
-    String answerId;
-}
-
-class DownVote {
-    String downVoteId;
-    String userId;
-    String questionId;
-    String answerId;
-}
-
-class Answer {
-    String answer;
-    String questionId;
-    String userId;
-}
-
-class Reputation {
-
-}
+//    Most frequently used tags in the questions
 public class StackOverFlowSystem {
-
+    HashMap<String, List<AccountActivationStatus.Question>> questionsListMap = new HashMap<>();
+    List<AccountActivationStatus.Question> getMostFrequentlyTaggedQuestions() {
+        int maxNum = 0;
+        List<AccountActivationStatus.Question> questionsList = new ArrayList<>();
+        for(Map.Entry<String, List<AccountActivationStatus.Question>> entry: questionsListMap.entrySet()) {
+            if(entry.getValue().size()>maxNum) {
+                questionsList = entry.getValue();
+            }
+        }
+        return questionsList;
+    }
 }
+
