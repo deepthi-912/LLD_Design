@@ -90,7 +90,7 @@ class Customer {
     String userId;
     String password;
     Person person;
-    AccountStatus status;
+    AmazonOrdering.AccountStatus status;
 }
 
 class Admin extends Customer {
