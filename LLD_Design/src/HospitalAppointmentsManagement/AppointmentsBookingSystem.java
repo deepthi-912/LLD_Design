@@ -9,7 +9,7 @@ import java.util.Map;
 class Doctor {
     String doctorId;
     String doctorName;
-    HashMap<TimeSlot, Boolean> availability;
+    List<TimeSlot> timeSlots;
     String specialityDepartment;
     Date joinedDate;
     String email;
