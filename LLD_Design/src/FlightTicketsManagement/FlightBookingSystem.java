@@ -26,6 +26,7 @@ class Account {
     Person person;
     String password;
     String userId;
+    Account status;
     void makeReservation(String flightSchedule) {
         // make a reservation for this particular schedule for the current user
     }
