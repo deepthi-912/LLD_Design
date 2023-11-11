@@ -70,7 +70,7 @@ class User {
     }
 }
 class RegisterUserService {
-    User registerUser(String userName, String mobileNumber, String pincode) {
+    static User registerUser(String userName, String mobileNumber, String pincode) {
         User user = new User(userName, mobileNumber, pincode);
         return user;
     }
@@ -83,6 +83,15 @@ class SelfAssessment {
     boolean isCold;
     boolean isTravelHistory;
     boolean isContact;
+
+    public SelfAssessment(String userName, boolean isCough, boolean isThroat, boolean isCold, boolean isTravelHistory, boolean isContact) {
+        this.userName = userName;
+        this.isCough = isCough;
+        this.isThroat = isThroat;
+        this.isCold = isCold;
+        this.isTravelHistory = isTravelHistory;
+        this.isContact = isContact;
+    }
 
     Integer generateCovidRisk() {
         int c=0;
@@ -115,6 +124,12 @@ class CovidResult {
     String patientUserName;
     boolean covidTestResult;
 
+    public CovidResult(String adminUserName, String patientUserName, boolean covidTestResult) {
+        this.adminUserName = adminUserName;
+        this.patientUserName = patientUserName;
+        this.covidTestResult = covidTestResult;
+    }
+
     public String getAdminUserName() {
         return adminUserName;
     }
@@ -141,10 +156,16 @@ class CovidResult {
 }
 
 class Zone {
-    String zoneId;
     Integer numberOfCovidCases;
     String pincode;
     ZoneType zoneType;
+
+    public Zone(Integer numberOfCovidCases, String pincode, ZoneType zoneType) {
+        this.numberOfCovidCases = numberOfCovidCases;
+        this.pincode = pincode;
+        this.zoneType = zoneType;
+    }
+
     public Integer getNumberOfCovidCases() {
         return numberOfCovidCases;
     }
@@ -168,10 +189,29 @@ class Zone {
     }
 
 }
+class ZoneUpdateService {
+    //users results hashmap with key as username/phonenum
+    HashMap<String, CovidResult> resultsHashMap = new HashMap<>();
 
-public class CovidTrackingSystem {
-    HashMap<String, Zone> zoneDetailsMap;
-
+    // zone details wrt it's particular pincode map
+    HashMap<String, Zone> zoneDetailsMap = new HashMap<>();
+    void updateCovidDetails(String pincode, String userId, boolean covidResult) {
+        if(resultsHashMap.get(userId)!=null) {
+            resultsHashMap.get(userId).setCovidTestResult(covidResult);
+        } else {
+            CovidResult result = new CovidResult(userId, userId, covidResult);
+            resultsHashMap.put(userId, result);
+        }
+        if(covidResult) {
+            if(zoneDetailsMap.get(pincode)!=null) {
+                Integer updateCases = zoneDetailsMap.get(pincode).getNumberOfCovidCases();
+                zoneDetailsMap.get(pincode).setNumberOfCovidCases(updateCases+1);
+            } else {
+                Zone zone = new Zone(1, pincode, ZoneType.GREEN);
+                zoneDetailsMap.put(pincode, zone);
+            }
+        }
+    }
     ZoneType getZoneByPincode(String pincode) {
         int numOfCovidCases = zoneDetailsMap.get(pincode).getNumberOfCovidCases();
         if(numOfCovidCases>5) {
@@ -182,21 +222,18 @@ public class CovidTrackingSystem {
         }
         return ZoneType.GREEN;
     }
-    public class ZoneUpdateService {
-        //users results hashmap with key as username/phonenum
-        HashMap<String, CovidResult> resultsHashMap;
+}
 
-        // zone details wrt it's particular pincode map
-        HashMap<String, Zone> zoneDetailsMap;
-        void updateCovidDetails(String pincode, String userId, boolean covidResult) {
-            resultsHashMap.get(userId).setCovidTestResult(covidResult);
-            if(covidResult) {
-                Integer updateCases = zoneDetailsMap.get(pincode).getNumberOfCovidCases();
-                zoneDetailsMap.get(pincode).setNumberOfCovidCases(updateCases+1);
-            }
-        }
-    }
+public class CovidTrackingSystem {
     public static void main(String[] args) {
+        RegisterUserService.registerUser("deepthi", "9290266691", "521301");
+        SelfAssessment selfAssessment = new SelfAssessment("deepthi", true, true, true, true, true);
 
+        selfAssessment.generateCovidRisk();
+        RegisterUserService.registerUser("pavs", "9290266692", "522301");
+        ZoneUpdateService zoneService= new ZoneUpdateService();
+        zoneService.updateCovidDetails("522301", "pavs", true);
+        ZoneType zoneType = zoneService.getZoneByPincode("522301");
+        System.out.println("Zone Type of " + "522301 is " + zoneType );
     }
 }

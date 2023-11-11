@@ -130,7 +130,7 @@ public class MusicRecommendationSystem {
         usersPlaylists.put(userId, playlist);
     }
 
-    List<Song> showRecommendations(String user) {
+    void showRecommendations(String user) {
         Playlist userPlayList = usersPlaylists.get(user);
         List<Song> userPlaylistSongs = userPlayList.playlistSongs;
         List<Song> listOfRecommendedSongs = new ArrayList<>();

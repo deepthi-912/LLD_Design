@@ -32,9 +32,9 @@ class Restaurant {
         this.restaurantRating = restaurantRating;
         this.max_orders = max_orders;
     }
-    void updateItem(MenuItem item, Double price, ) {
-
-    }
+//    void updateItem(MenuItem item, Double price, ) {
+//
+//    }
 }
 public class RestaurantFoodOrdering {
 
