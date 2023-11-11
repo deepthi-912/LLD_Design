@@ -47,6 +47,7 @@ import java.util.Map;
 //<5 cases in a zone - ORANGE
 //>5 cases in a zone - RED
 //
+
 //INPUT:
 //GetZone(560037);
 //
@@ -68,9 +69,10 @@ class User {
         this.pincode = pincode;
     }
 }
-class RegisterUser {
-    public RegisterUser(String userName, String mobileNumber, String pincode) {
+class RegisterUserService {
+    User registerUser(String userName, String mobileNumber, String pincode) {
         User user = new User(userName, mobileNumber, pincode);
+        return user;
     }
 }
 
@@ -139,19 +141,16 @@ class CovidResult {
 }
 
 class Zone {
+    String zoneId;
     Integer numberOfCovidCases;
     String pincode;
     ZoneType zoneType;
-
-
     public Integer getNumberOfCovidCases() {
         return numberOfCovidCases;
     }
-
     public void setNumberOfCovidCases(Integer numberOfCovidCases) {
         this.numberOfCovidCases = numberOfCovidCases;
     }
-
     public String getPincode() {
         return pincode;
     }
@@ -167,27 +166,35 @@ class Zone {
     public void setZoneType(ZoneType zoneType) {
         this.zoneType = zoneType;
     }
+
 }
+
 public class CovidTrackingSystem {
-    // map all the users with a particular pincode
-    HashMap<String, List<String>> mapUserWithPinCode;
-    // map the test result with a particular user
-    HashMap<String, CovidResult> mapUserWithTestResult;
-    String getZoneByPincode(String pincode) {
-        int count=0;
-        List<String> covidResults = mapUserWithPinCode.get(pincode);
-        for(int i=0;i<covidResults.size();i++) {
-            if(mapUserWithTestResult.get(covidResults.get(i)).isCovidTestResult()) {
-                count++;
+    HashMap<String, Zone> zoneDetailsMap;
+
+    ZoneType getZoneByPincode(String pincode) {
+        int numOfCovidCases = zoneDetailsMap.get(pincode).getNumberOfCovidCases();
+        if(numOfCovidCases>5) {
+            return ZoneType.RED;
+        }
+        if(numOfCovidCases<5) {
+            return ZoneType.ORANGE;
+        }
+        return ZoneType.GREEN;
+    }
+    public class ZoneUpdateService {
+        //users results hashmap with key as username/phonenum
+        HashMap<String, CovidResult> resultsHashMap;
+
+        // zone details wrt it's particular pincode map
+        HashMap<String, Zone> zoneDetailsMap;
+        void updateCovidDetails(String pincode, String userId, boolean covidResult) {
+            resultsHashMap.get(userId).setCovidTestResult(covidResult);
+            if(covidResult) {
+                Integer updateCases = zoneDetailsMap.get(pincode).getNumberOfCovidCases();
+                zoneDetailsMap.get(pincode).setNumberOfCovidCases(updateCases+1);
             }
         }
-        if(count<5) {
-            return "ORANGE";
-        }
-        if(count>5) {
-            return "RED";
-        }
-        return "GREEN";
     }
     public static void main(String[] args) {
 
