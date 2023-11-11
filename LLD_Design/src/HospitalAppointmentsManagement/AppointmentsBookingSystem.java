@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+enum AppointmentStatus {
+    VALID, INVALID, ACTIVE, BOOKED;
+}
 class Doctor {
     String doctorId;
     String doctorName;
@@ -28,6 +31,7 @@ class TimeSlot {
     Time startTime;
     Time endTime;
     boolean isAvailable;
+    boolean isAppointmentAvailable;
     String doctorId;
 }
 class Appointment {
@@ -42,17 +46,9 @@ class Appointment {
     String appointmentId;
     String doctorId;
     String patientId;
-    Time inTime;
-    Time outTime;
+    TimeSlot timeSlot;
     String descriptionOfAppointment;
-
-    public Appointment(String doctorId, String patientId, Time inTime, Time outTime, String descriptionOfAppointment) {
-        this.doctorId = doctorId;
-        this.patientId = patientId;
-        this.inTime = inTime;
-        this.outTime = outTime;
-        this.descriptionOfAppointment = descriptionOfAppointment;
-    }
+    AppointmentStatus appointmentStatus;
 
     public String getDoctorId() {
         return doctorId;
@@ -70,22 +66,6 @@ class Appointment {
         this.patientId = patientId;
     }
 
-    public Time getInTime() {
-        return inTime;
-    }
-
-    public void setInTime(Time inTime) {
-        this.inTime = inTime;
-    }
-
-    public Time getOutTime() {
-        return outTime;
-    }
-
-    public void setOutTime(Time outTime) {
-        this.outTime = outTime;
-    }
-
     public String getDescriptionOfAppointment() {
         return descriptionOfAppointment;
     }
@@ -95,87 +75,59 @@ class Appointment {
     }
 }
 class SearchService {
-    HashMap<String, List<Appointment>> listOfAppointmentsByDoc;
-    HashMap<String, List<Appointment>> listOfAppointmentsByPatient;
-
-    List<Appointment> searchAppointmentsByDoctorName(String doctorName) {
-        return listOfAppointmentsByDoc.get(doctorName);
+    HashMap<String, List<String>> listOfAppointmentsByDoc; //map of appointments corresponding to the doctorid and his list of appointment ids
+    HashMap<String, List<String>> listOfAppointmentsByPatient;
+    HashMap<String, Appointment> listOfAppointments;
+    HashMap<String, HashMap<Time, TimeSlot>> listOfTimeSlots;
+    List<Appointment> searchAppointmentsByDoctorName(String doctorId) {
+        List<String> appointments = listOfAppointmentsByDoc.get(doctorId);
+        List<Appointment> output = null;
+        for(int i=0;i<appointments.size();i++) {
+            output.add(listOfAppointments.get(appointments.get(i)));
+        }
+        return output;
     }
     List<Appointment> searchAppointmentsByPatientName(String patientName) {
-        return listOfAppointmentsByPatient.get(patientName);
-    }
-    List<TimeSlot> searchAvailableAppointments(String patientName) {
-        for(Map.Entry<String, List<Appointment>> entry: listOfAppointmentsByDoc.entrySet()) {
-            for(Time time = 0; time<=9; time++) {
-                //search for the appointment that is not in the list
-                //add it to list
+            List<String> appointments = listOfAppointmentsByPatient.get(patientName);
+            List<Appointment> output = null;
+            for(int i=0;i<appointments.size();i++) {
+                output.add(listOfAppointments.get(appointments.get(i)));
             }
-            //return all the entries
+            return output;
         }
+    List<TimeSlot> searchAvailableAppointments() {
+        List<TimeSlot> availableSlots = null;
+        for(Map.Entry<String, HashMap<Time, TimeSlot>> entry : listOfTimeSlots.entrySet()) {
+            for(Map.Entry<Time, TimeSlot> entryInner : entry.getValue().entrySet()) {
+                if(entryInner.getValue().isAppointmentAvailable) {
+                    availableSlots.add(entryInner.getValue());
+                }
+            }
+        }
+        return availableSlots;
     }
 }
 class AppointmentsManagement {
-    HashMap<String, List<Appointment>> listOfAppointmentsByPatient; ///fetched from Search service
-    HashMap<String, List<Appointment>> listOfAppointmentsByDoctor; ///fetched from Search service
-    List<Appointment> totalAppointmentsList;
-    void cancelAppointment(String appointmentId, String userId) {
-        List<Appointment> listOfAppointments = listOfAppointmentsByPatient.get(userId);
-        for(int i=0;i<listOfAppointments.size();i++) {
-            if(listOfAppointments.get(i).getAppointmentId()==appointmentId) {
-                listOfAppointments.remove(i);
-                totalAppointmentsList.remove(listOfAppointments.get(i));
-            }
-        }
+    HashMap<String, HashMap<Time, TimeSlot>> listOfTimeSlots;
+    HashMap<String, Appointment> listOfAppointments;
+    AppointmentStatus cancelAppointment(String appointmentId, String doctorId) {
+        listOfAppointments.get(appointmentId).appointmentStatus=AppointmentStatus.INVALID;
+        listOfTimeSlots.get(doctorId).get(listOfAppointments.get(appointmentId).timeSlot.startTime).isAppointmentAvailable=true;
+        return AppointmentStatus.INVALID;
     }
-    Appointment bookAppointment(Time inTime, Time outTime, String userId, String doctorId) {
-        List<Appointment> listOfAppointments = listOfAppointmentsByPatient.get(userId);
-        for(int i=0;i<listOfAppointments.size();i++) {
-            if(listOfAppointments.get(i).getInTime()==inTime) {
-                return null;
-            } else {
-                // add this appointment to the doctor appointment list
-                // add this appointment to the patient apppointment list
-                return new Appointment(doctorId, userId, inTime, outTime, "descriptionOfAppointment");
-            }
-        }
-        return null;
+
+    AppointmentStatus bookAppointment(String appointmentId, String doctorId) {
+        listOfAppointments.get(appointmentId).appointmentStatus=AppointmentStatus.BOOKED;
+        listOfTimeSlots.get(doctorId).get(listOfAppointments.get(appointmentId).timeSlot.startTime).isAppointmentAvailable=false;
+        return AppointmentStatus.BOOKED;
     }
+
 }
 public class AppointmentsBookingSystem {
-    List<Doctor> listOfDoctors;
-    List<TimeSlot> listOfTimes;
-    List<Patient> patients;
-    List<Appointment> listOfAppointments;
+   HashMap<String, Appointment> listOfAppointments;
 
-    public List<Doctor> getListOfDoctors() {
-        return listOfDoctors;
+    public Appointment getAppointmentById(String appointmentId) {
+        return listOfAppointments.get(appointmentId);
     }
 
-    public void setListOfDoctors(List<Doctor> listOfDoctors) {
-        this.listOfDoctors = listOfDoctors;
-    }
-
-    public List<TimeSlot> getListOfTimes() {
-        return listOfTimes;
-    }
-
-    public void setListOfTimes(List<TimeSlot> listOfTimes) {
-        this.listOfTimes = listOfTimes;
-    }
-
-    public List<Patient> getPatients() {
-        return patients;
-    }
-
-    public void setPatients(List<Patient> patients) {
-        this.patients = patients;
-    }
-
-    public List<Appointment> getListOfAppointments() {
-        return listOfAppointments;
-    }
-
-    public void setListOfAppointments(List<Appointment> listOfAppointments) {
-        this.listOfAppointments = listOfAppointments;
-    }
 }
