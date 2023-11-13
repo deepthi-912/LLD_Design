@@ -97,27 +97,82 @@ class Playlist {
     String playListName;
     List<Song> playlistSongs;
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getPlayListName() {
+        return playListName;
+    }
+
+    public void setPlayListName(String playListName) {
+        this.playListName = playListName;
+    }
+
+    public List<Song> getPlaylistSongs() {
+        return playlistSongs;
+    }
+
+    public void setPlaylistSongs(List<Song> playlistSongs) {
+        this.playlistSongs = playlistSongs;
+    }
+
     public Playlist(String userId, String playListName, List<Song> playlistSongs) {
         this.userId = userId;
         this.playListName = playListName;
         this.playlistSongs = playlistSongs;
     }
 }
+
+class Similarity {
+    String song1Name;
+    String song2Name;
+    Integer similarityScore;
+
+    public String getSong1Name() {
+        return song1Name;
+    }
+
+    public void setSong1Name(String song1Name) {
+        this.song1Name = song1Name;
+    }
+
+    public String getSong2Name() {
+        return song2Name;
+    }
+
+    public void setSong2Name(String song2Name) {
+        this.song2Name = song2Name;
+    }
+
+    public Integer getSimilarityScore() {
+        return similarityScore;
+    }
+
+    public void setSimilarityScore(Integer similarityScore) {
+        this.similarityScore = similarityScore;
+    }
+}
 public class MusicRecommendationSystem {
     HashMap<String, Song> songsMapLibraryList; // all songs list with the song name as the key
 
-    // users playlist with the list of playlists mapping to a particular user key
+    // users playlist with the list of playlists mapping to a particular user name
     HashMap<String, Playlist> usersPlaylists;
 
-    //map of friends
+    //map of friends for a particular user
     HashMap<String, List<String>> friendsMap;
+    HashMap<String, List<Song>> songRecommendationsMap;
 
     void addSongToLibrary(String songName, String genre, String tempo, String singer, Double popularity_score, String year) {
         songsMapLibraryList.put(songName, new Song(songName, genre, tempo, singer, popularity_score, year));
     }
 
     void addFriend(String user1, String user2) {
-        List<String> friends = friendsMap.get(user1);
+        List<String> friends = friendsMap.getOrDefault(user1, new ArrayList<String>());
         friends.add(user2);
     }
 
@@ -125,21 +180,25 @@ public class MusicRecommendationSystem {
         User newUser = new User(userId, userName, email, phoneNum);
     }
 
-    void addPlayList(String userId, String playlistName) {
-        Playlist playlist = new Playlist(userId, playlistName, new ArrayList<Song>());
-        usersPlaylists.put(userId, playlist);
+    void addPlayListSong(String userId, Song song, String playlistName) {
+        if(usersPlaylists.get(userId).getPlayListName()!=null) {
+            usersPlaylists.get(userId).getPlaylistSongs().add(song);
+        } else {
+            List<Song> newPlaylistSongs = new ArrayList<>();
+            newPlaylistSongs.add(song);
+            usersPlaylists.put(userId, new Playlist(userId, playlistName, newPlaylistSongs));
+        }
+//        showRecommendation(userId);
     }
 
     void showRecommendations(String user) {
         Playlist userPlayList = usersPlaylists.get(user);
-        List<Song> userPlaylistSongs = userPlayList.playlistSongs;
+        List<Song> userPlaylistSongs = userPlayList.getPlaylistSongs();
         List<Song> listOfRecommendedSongs = new ArrayList<>();
         HashMap<Song, Double> mapOfRecommendedSongsScore = new HashMap<>();
-        for(int i=0;i<userPlaylistSongs.size();i++) {
-            for(Map.Entry<String, Song> entry : songsMapLibraryList.entrySet()) {
-                if(!userPlaylistSongs.contains(entry.getValue())) {
-                    mapOfRecommendedSongsScore.put(entry.getValue(), calculateSimilarityIndex(entry.getValue().getSongName(), userPlaylistSongs.get(i).getSongName()));
-                }
+        for(Map.Entry<String, Song> entry : songsMapLibraryList.entrySet()) {
+            if(!userPlayList.getPlaylistSongs().contains(entry.getValue())) {
+//                calculateSimilarityIndex(entry.getValue().getSongName(), )
             }
         }
     }
