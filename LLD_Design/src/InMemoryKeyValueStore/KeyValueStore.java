@@ -12,7 +12,7 @@ public class KeyValueStore {
         this.keyValueStore = new HashMap<>(capacity);
     }
 
-    synchronized void putElement(String str, Integer value) throws IllegalAccessException {
+     void putElement(String str, Integer value) throws IllegalAccessException {
         if(keyValueStore.containsKey(str) || keyValueStore.size()<capacity) {
             keyValueStore.put(str, value);
         } else {
