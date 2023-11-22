@@ -4,26 +4,35 @@ import java.util.HashMap;
 
 public class KeyValueStore {
     HashMap<String, Integer> keyValueStore;
+    Integer capacity;
 
-    synchronized void putElement(String str, Integer value) {
-        keyValueStore.put(str, value);
+    //
+    public KeyValueStore(Integer capacity) {
+        this.capacity = capacity;
+        this.keyValueStore = new HashMap<>(capacity);
     }
 
-    Integer getValue(String str) {
+    synchronized void putElement(String str, Integer value) throws IllegalAccessException {
+        if(keyValueStore.containsKey(str) || keyValueStore.size()<capacity) {
+            keyValueStore.put(str, value);
+        } else {
+            throw new IllegalAccessException("The capacity is reached");
+        }
+    }
+
+    Integer getValue(String str) throws IllegalAccessException {
         if(keyValueStore.containsKey(str)) {
             return keyValueStore.get(str);
         } else {
-            System.out.println("Not found");
-            return -1;
+            throw new IllegalAccessException("The value is not found");
         }
     }
 
-    void removeElement(String str) {
+    void removeElement(String str) throws IllegalAccessException {
         if(keyValueStore.containsKey(str)) {
             keyValueStore.remove(str);
         } else {
-            System.out.println("The element is not found!");
+            throw new IllegalAccessException("The value is not found");
         }
     }
-
 }
