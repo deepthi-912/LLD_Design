@@ -55,11 +55,7 @@ class Book {
     Date publication;
     Integer numOfPages;
     Integer numOfCopies;
-    void addBookInstance(BookItem bookInstance) {
-        //update num of Copies
-        //notify the first user from the queue if available and remove if so
-    }
-    void addReserveBookByMember(Member member) {
+    void updateCopies() {
 
     }
 }
