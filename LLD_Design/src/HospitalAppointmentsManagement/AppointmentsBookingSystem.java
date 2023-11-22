@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 enum AppointmentStatus {
-    VALID, INVALID, ACTIVE, BOOKED;
+    VALID, INVALID, ACTIVE, BOOKED, CANCELLED;
 }
 class Doctor {
     String doctorId;
@@ -113,10 +113,11 @@ class AppointmentsManagement {
     AppointmentStatus cancelAppointment(String appointmentId, String doctorId) {
         listOfAppointments.get(appointmentId).appointmentStatus=AppointmentStatus.INVALID;
         listOfTimeSlots.get(doctorId).get(listOfAppointments.get(appointmentId).timeSlot.startTime).isAppointmentAvailable=true;
-        return AppointmentStatus.INVALID;
+        return AppointmentStatus.CANCELLED;
     }
 
     AppointmentStatus bookAppointment(String appointmentId, String doctorId) {
+        
         listOfAppointments.get(appointmentId).appointmentStatus=AppointmentStatus.BOOKED;
         listOfTimeSlots.get(doctorId).get(listOfAppointments.get(appointmentId).timeSlot.startTime).isAppointmentAvailable=false;
         return AppointmentStatus.BOOKED;
