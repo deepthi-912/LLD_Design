@@ -30,6 +30,12 @@ enum AccountStatus {
 enum RoomStatus {
     AVAILABLE, BOOKED, CLEANING, CHECKED_IN, UN_AVAILABLE;
 }
+enum RoomServiceType {
+    HOUSEKEEPING, LAUNDRY, FOOD_SERVICE;
+}
+enum WorkerType {
+    HOUSEKEEPER, RECEPTIONIST, CHEF, MANAGER;
+}
 class Address {
     String street;
     String city;
@@ -43,25 +49,19 @@ class Room {
     String roomNumber;
     Integer floorNumber;
     RoomStatus roomStatus;
-}
-class RoomTypeInstance {
-    RoomType roomType;
-    Integer capacity;
-    String hotelId;
-    Double price;
-    Integer availableRooms;
+    Double roomPrice;
+    void checkOutRoom() {
+        // make the room
+    }
+    void checkIn() {
+
+    }
 }
 class Hotel {
     String hotelId;
     String hotelName;
     Address address;
     void addRoom(Room room) {
-
-    }
-    void checkOutRoom(Room room) {
-        // make the room
-    }
-    void checkIn(Room room) {
 
     }
 }
@@ -73,8 +73,14 @@ class Booking {
     Date roomCheckInDate;
     Date checkOutDate;
     String roomNumber;
-    HashMap<RoomType, Integer> bookingsMap;
     String hotelId;
+    void addEminity() {
+
+    }
+
+}
+class Eminity {
+
 }
 class Payment {
     String paymentId;
@@ -113,34 +119,39 @@ class Customer {
 
     }
 }
-class HouseKeeping {
+class Receiptionist {
+    Account account;
+    String hotelId;
+    Booking createReservation() {
+        return null;
+    }
+}
+class Housekeeper {
+    Account account;
+    String hotelId;
+    void assignHouseKeepingService(String roomNumber, Timestamp timestamp, RoomServiceType roomServiceType) {
 
+    }
 }
-class CleaningService extends  HouseKeeping {
-    Timestamp cleaningTime;
+class RoomServiceLog {
+    RoomServiceType roomServiceType;
+    String workerId;
+    Timestamp timestamp;
     String roomNumber;
     String hotelId;
 }
-class LaundryService extends  HouseKeeping {
-    Timestamp laundryTime;
-    String roomNumber;
-    String hotelId;
-}
-class FoodService extends  HouseKeeping {
-    Timestamp orderTime;
-    String roomNumber;
-    String hotelId;
-}
+
 class BookingManagementService {
-    HashMap<RoomType, RoomTypeInstance> roomTypeRoomTypeInstanceHashMap = new HashMap<>();
-    Booking bookRoom(Date checkInTime, Customer customer, RoomType roomType, Integer numOfRooms) {
+    Booking bookRoom(Date checkInTime, Customer customer, String roomNumber, Integer numOfRooms) {
         // checks for the available rooms from roomType instance
         // if available, book one Room from the same and return the booking
-        if(roomTypeRoomTypeInstanceHashMap.get(roomType).availableRooms>=numOfRooms) {
-            roomTypeRoomTypeInstanceHashMap.get(roomType).availableRooms -= numOfRooms;
-        }
-
         return null;
+    }
+    BookingStatus cancelBooking(Booking booking) {
+        return BookingStatus.CANCELLED;
+    }
+    BookingStatus modifyBooking(Booking booking) {
+        return BookingStatus.CANCELLED;
     }
 }
 class SearchService {
@@ -152,5 +163,4 @@ class SearchService {
     }
 }
 public class HotelBookingManagement {
-    List<CleaningService> cleaningServiceList = new ArrayList<>();
 }
