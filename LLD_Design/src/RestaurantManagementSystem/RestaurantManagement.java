@@ -6,6 +6,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+//We will focus on the following set of requirements while designing the Restaurant Management System:
+//
+//        The restaurant will have different branches.
+//        Each restaurant branch will have a menu.
+//        The menu will have different menu sections, containing different menu items.
+//        The waiter should be able to create an order for a table and add meals for each seat.
+//        Each meal can have multiple meal items. Each meal item corresponds to a menu item.
+//        The system should be able to retrieve information about tables currently available to seat walk-in customers.
+//        The system should support the reservation of tables.
+//        The receptionist should be able to search for available tables by date/time and reserve a table.
+//        The system should allow customers to cancel their reservation.
+//        The system should be able to send notifications whenever the reservation time is approaching.
+//        The customers should be able to pay their bills through credit card, check or cash.
+//        Each restaurant branch can have multiple seating arrangements of tables.
 
 enum ReservationStatus {
     RESERVED, EATING_AT_TABLE, AVAILABLE, CANCELLED;
