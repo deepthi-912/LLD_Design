@@ -52,7 +52,7 @@ class Book {
     String title;
     GENRE genre;
     String author;
-    Date publication;
+    Date publicationDate;
     Integer numOfPages;
     Integer numOfCopies;
     void updateCopies() {

@@ -32,7 +32,6 @@ class Playing11 {
 }
 class Player {
     Person person;
-    String teamId;
     PlayerType playerType;
 }
 class Ball {
@@ -90,7 +89,6 @@ class Over {
     Match matchid;
     Player Bowler;
     Integer overNumber;
-    Player batsman;
 }
 class Wicket {
     Player bowler;
